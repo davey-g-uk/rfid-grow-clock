@@ -1,0 +1,112 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="libs/style.css">
+<script type="text/javascript" src="/libs/jquery-1.12.0.min.js"></script>
+</script>
+<script type="text/javascript">
+function showValue(newValue,elementid)
+{
+    document.getElementById(elementid).innerHTML=newValue;
+}
+function submitunchecked(elementid)
+{
+    hidden_element = elementid + "-hidden";
+    if(document.getElementById(elementid).checked) {
+        document.getElementById(hidden_element).disabled = true;
+    } else {
+        document.getElementById(hidden_element).disabled = false;
+    }
+}
+function setcheckboxsubmit() {
+    var formelements = document.forms["config"].elements;
+    var checkedElements = new Array();
+    for (var i = 0, element; element = formelements[i]; i++) {
+      if (element.type == "checkbox" ) {
+        checkedElements.push(element.id);
+      }
+    }
+    var arrayLength = checkedElements.length;
+    for (var i = 0; i < arrayLength; i++) {
+        submitunchecked(checkedElements[i]);
+    }
+}
+
+</script>
+{% macro show_formtext(item) %}
+<tr>
+    <td>{{ item.option_name }} - {{item.title}}</td>
+    <td>
+        <input name="{{item.option}}" type="text" value="{{ item.value }}"/>   
+    </td>
+</tr>
+{% endmacro %}
+{% macro show_formradio(item,radio) %}
+<tr>
+    <td>{{ item.option_name }} - vdvdv {{item.title}}</td>
+    <tr>
+            <td>{{ item.option_name }}</td>
+            <td>
+    {% for elements in radio %}
+        <input name="{{item.option}}" type="radio" value="{elements.value}"/>{elements.display}</td>
+    {% endfor %}
+        </tr>
+{% endmacro %}
+
+
+</head>
+    <body onload="setcheckboxsubmit()">
+        <form id="config" method="post" action="/index" name="config">
+            <table>
+                <tr>
+                <td>Quiet Time</td>
+                <td>
+                <!--<select name="quiet_time_hour">
+                        {% for n in range(0,24) %}
+                        <option value="{{n|f2digit}}" {% if config['quiet_time_hour'] == n|f2digit %} selected {%endif%} >{{n|f2digit}}</option>
+                        {% endfor %}
+                </select> 
+                :-->
+                <select name="quiet_time_min">
+                        {% for n in range(0,60,5) %}
+                        <option value="{{n|f2digit}}" {% if config['quiet_time_min'] == n|f2digit %} selected {%endif%} >{{n|f2digit}}</option>
+                        {% endfor %}
+                </select>
+                </td>
+                  </td>
+                <td rowspan=5><img src='libs/{{config['state']}}.png' width='75' height='200'>
+                </td>
+                </tr>
+                <tr>
+                <td>Alarm Time</td>
+                <td>
+                <select name="alarm_time_hour">
+                        {% for n in range(0,24) %}
+                        <option value="{{n|f2digit}}" {% if config['alarm_time_hour'] == n|f2digit %} selected {%endif%} >{{n|f2digit}}</option>
+                        {% endfor %} 
+                </select> 
+                :
+                <select name="alarm_time_min">
+                        {% for n in range(0,60) %}
+                        <option value="{{n|f2digit}}" {% if config['alarm_time_min'] == n|f2digit %} selected {%endif%} >{{n|f2digit}}</option>
+                        {% endfor %}
+                </select>               
+                </tr>
+                <tr>
+                <td>Alarm Enabled</td>
+                <td>
+                <label class="switch switch-slide">
+                <input class="switch-input" id="status" name="status" type="checkbox" value=1 onclick="submitunchecked('status')" {% if config['status'] == '1' %} checked {%endif%}>
+                <span class="switch-label" data-on="Yes" data-off="No"></span> 
+                <span class="switch-handle"></span>
+                </label>
+                <input id="status-hidden" type="hidden" value=0 name="status">
+                </td>
+                </tr>
+                <tr>
+                    <td colspan="2"><button type="submit" value="Set" class="switch-label">Save Changes</button>{{result}}</td>   
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>
+
